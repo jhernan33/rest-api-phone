@@ -1,2 +1,3 @@
 # rest-api-phone
-Rest Api Phone
+Rest Api Phone, Nodejs, Postgresql
+
