@@ -27,8 +27,19 @@ const getNumbers = (request, response) => {
       response.status(200).json(results.rows)
     })
   }
+
+  const getDefray = (request, response) => {
+    var query = 'select * from electoral.sufragar';
+    pool.query(query, (error, results) => {
+      if(error){
+        throw error
+      }
+      response.status(200).json(results.rows)
+    })
+  }
   
   module.exports = {
     getNumbers,
     getNumberByGroup,
+    getDefray,
   }

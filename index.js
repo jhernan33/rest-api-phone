@@ -19,6 +19,7 @@ app.get('/', (request, response) => {
 
 app.get('/numbers', db.getNumbers)
 app.get('/numbers/:id', db.getNumberByGroup)
+app.get('/defray', db.getDefray)
 
 app.get('/debug',(req,res) =>{
   LOG('This is a console message');
