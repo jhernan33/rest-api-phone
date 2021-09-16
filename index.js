@@ -4,7 +4,8 @@ const bodyParser = require('body-parser')
 const app = express()
 const db = require('./queries')
 const port = 3000
-const host = '127.0.0.1'
+//const host = '127.0.0.1'
+const host ='192.168.0.100'
 
 app.use(bodyParser.json())
 app.use(
@@ -20,6 +21,7 @@ app.get('/', (request, response) => {
 app.get('/numbers', db.getNumbers)
 app.get('/numbers/:id', db.getNumberByGroup)
 app.get('/defray', db.getDefray)
+app.post('/defray',db.createDefray)
 
 app.get('/debug',(req,res) =>{
   LOG('This is a console message');
