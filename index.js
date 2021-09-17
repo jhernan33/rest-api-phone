@@ -1,11 +1,13 @@
+require('doenv').load();
+
 const express = require('express')
 const LOG = require('debug')('app');
 const bodyParser = require('body-parser')
 const app = express()
 const db = require('./queries')
-const port = 3000
+const port = process.env.PORT;
 //const host = '127.0.0.1'
-const host ='192.168.0.100'
+const host = process.env.HOST;
 
 app.use(bodyParser.json())
 app.use(
