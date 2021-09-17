@@ -1,4 +1,5 @@
-require('doenv').load();
+require('dotenv').config({path:'.env'})
+
 
 const express = require('express')
 const LOG = require('debug')('app');
