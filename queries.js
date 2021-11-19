@@ -32,7 +32,7 @@ const getNumbers = (request, response) => {
   }
 
   const getDefray = (request, response) => {
-    var query = 'select * from electoral.sufragar';
+    var query = 'select * from electoral.sufragar order by id desc';
     pool.query(query, (error, results) => {
       if(error){
         throw error
@@ -112,7 +112,7 @@ const getNumbers = (request, response) => {
   const getDefrayId = (request, response) => {
     const id = parseInt(request.params.id)
   
-    pool.query('SELECT * from electoral.sufragar  where id =$1 order by id desc', [id], (error, results) => {
+    pool.query('SELECT * from electoral.sufragar  where id =$1', [id], (error, results) => {
       if (error) {
         throw error
       }
