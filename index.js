@@ -24,6 +24,7 @@ app.get('/', (request, response) => {
 app.get('/numbers', db.getNumbers)
 app.get('/numbers/:id', db.getNumberByGroup)
 app.get('/defray', db.getDefray)
+app.get('/defray/:id', db.getDefrayId)
 app.post('/defray',db.createDefray)
 
 app.get('/debug',(req,res) =>{

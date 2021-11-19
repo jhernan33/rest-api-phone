@@ -58,44 +58,70 @@ const getNumbers = (request, response) => {
     /**
      * Array de Votantes
      */
-    if(Array.isArray(request.body.cedula_votante)){
-      var myArray = request.body.cedula_votante;
+    //console.log('Valor de la Funcion isArray=='+Array.isArray(request.body.votantes));
+    const _array = [];
+    if(Array.isArray(request.body.votantes)){
+      var myArray = request.body.votantes;
+
       
-      var array = [];
-      myArray.forEach((element, index) => {
-        array.push([element,cedula_reporta,id_movil,datetime])
-      });
-
-      const arrayString = [];
-
-      array.forEach(ele => arrayString.push("("+ ele.toString() +")" ));
-
-      const query = "INSERT INTO electoral.sufragar(cedula_votante,cedula_reporta,id_movil,created_at) VALUES "+arrayString;
-      console.log(query);
-
-      pool.query(query, function(err,result){
-        if(err){
-          throw err
-          pool.end();
+      // console.log("Longitud Array "+myArray.length);
+      for(var i =0; i< myArray.length; i++){
+        //console.log(myArray[i]);
+        let cedula = myArray[i];
+        //console.log("Cedula=="+cedula);
+        pool.query('SELECT * from electoral.sufragar where cedula_votante =$1', [cedula])
+      .then(res => {
+        let filas = res.rows.length;
+        if(filas==0){
+          //_array.push([cedula,cedula_reporta,id_movil,datetime]);
+          //console.log("valores:::"+_array);
+          pool.query('INSERT INTO electoral.sufragar (cedula_votante, cedula_reporta, id_movil,created_at) VALUES ($1, $2, $3, now()) RETURNING *', [cedula, cedula_reporta, id_movil], (error, result) => {
+            if (error) {
+              throw error
+            }
+            //response.status(201).send(`Depray added with ID: ${result.rows[0].id}`)
+          })
         }
-        response.status(201).send(`Defray added:`)
-      });
-
+      })
+      .catch(e => console.error(e.stack))
+      }
+      response.status(201).send(`Depray added`);
     }else{
       /**
        * Registro de Un solo Votante
        */
       const { cedula_votante, cedula_reporta, id_movil } = request.body
-    
-      pool.query('INSERT INTO electoral.sufragar (cedula_votante, cedula_reporta, id_movil,created_at) VALUES ($1, $2, $3, now()) RETURNING *', [cedula_votante, cedula_reporta, id_movil], (error, result) => {
+
+      pool.query('SELECT * from electoral.sufragar  where cedula_votante =$1', [cedula_votante], (error, results) => {
         if (error) {
           throw error
         }
-        
-        response.status(201).send(`Depray added with ID: ${result.rows[0].id}`)
-      })
+        if(results.rows.length <1){
+          pool.query('INSERT INTO electoral.sufragar (cedula_votante, cedula_reporta, id_movil,created_at) VALUES ($1, $2, $3, now()) RETURNING *', [cedula_votante, cedula_reporta, id_movil], (error, result) => {
+            if (error) {
+              throw error
+            }
+            
+            response.status(201).send(`Depray added with ID: ${result.rows[0].id}`)
+          })    
+        }
+       })
     }
+  }
 
+  const getDefrayId = (request, response) => {
+    const id = parseInt(request.params.id)
+  
+    pool.query('SELECT * from electoral.sufragar  where id =$1 order by id desc', [id], (error, results) => {
+      if (error) {
+        throw error
+      }
+      if(results.rows.length >0){
+        response.status(200).json(results.rows)
+      }else{
+        response.status(200).json("No Encontro")
+      }
+    })
   }
   
   module.exports = {
@@ -103,4 +129,5 @@ const getNumbers = (request, response) => {
     getNumberByGroup,
     getDefray,
     createDefray,
+    getDefrayId,
   }
