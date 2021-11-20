@@ -26,6 +26,7 @@ app.get('/numbers/:id', db.getNumberByGroup)
 app.get('/defray', db.getDefray)
 app.get('/defray/:id', db.getDefrayId)
 app.post('/defray',db.createDefray)
+app.get('/numberDefray',db.getNumberDefray)
 
 app.get('/debug',(req,res) =>{
   LOG('This is a console message');

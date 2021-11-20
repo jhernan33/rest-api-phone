@@ -123,6 +123,29 @@ const getNumbers = (request, response) => {
       }
     })
   }
+
+  /**
+   * Function send not defray
+   */
+   const getNumberDefray = (request, response) => {
+    let query ="select distinct on(prna.cedu_pena)prna.cedu_pena,dpa.codi_pena,dpa.tel1_pena \
+      from electoral.patrol_d as dpa \
+    left outer join comun.pers_natu as prna on dpa.codi_pena = prna.codi_pena \
+    where prna.cedu_pena is not null \
+    and not exists \
+    ( \
+      select suf.cedula_votante \
+      from electoral.sufragar as suf \
+      where suf.cedula_votante = prna.cedu_pena \
+    ) \
+    order by prna.cedu_pena limit 100";
+      pool.query(query, (error, results) => {
+        if (error) {
+          throw error
+        }
+        response.status(200).json(results.rows)
+      })
+    }
   
   module.exports = {
     getNumbers,
@@ -130,4 +153,5 @@ const getNumbers = (request, response) => {
     getDefray,
     createDefray,
     getDefrayId,
+    getNumberDefray,
   }
