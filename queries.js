@@ -11,11 +11,26 @@ const pool = new Pool({
 const format = require('pg-format');  
 
 const getNumbers = (request, response) => {
-  var query ='SELECT distinct comu.numero as number,mess.description as message FROM comun.comunica_g as comu left outer join comun.message_template as mess on comu.id_message = mess.id where inactivo=false ORDER BY comu.numero ASC';
+  var query ='SELECT distinct comu.numero as number,mess.description as message,comu.enviado,comu.id \
+   FROM comun.comunica_g as comu left outer join comun.message_template as mess on comu.id_message = mess.id \
+    where inactivo=false and enviado = false ORDER BY comu.numero ASC limit 100';
     pool.query(query, (error, results) => {
       if (error) {
         throw error
       }
+      // if(results.rows.length >0){
+      //     //console.log("Longitud de la Consulta="+results.rows);
+      //     // for(var i =0; i< results.rows.length; i++){
+      //     //   //console.log("id="+JSON.stringify(results.rows[i].id));
+      //     //   let xid = JSON.stringify(results.rows[i].id);
+      //     //   pool.query("update comun.comunica_g set enviado ='true' where id=$1 ",[xid], (error,result) =>{
+      //     //     if(error){
+      //     //       throw error
+      //     //     }
+      //     //     console.log("guardado");
+      //     //   });
+      //     // }
+      //   }
       response.status(200).json(results.rows)
     })
   }
@@ -23,7 +38,9 @@ const getNumbers = (request, response) => {
   const getNumberByGroup = (request, response) => {
     const id = parseInt(request.params.id)
   
-    pool.query('SELECT distinct comu.numero as number,mess.description as message FROM comun.comunica_g as comu left outer join comun.message_template as mess on comu.id_message = mess.id where inactivo=false and grupo =$1 ORDER BY 2 ASC', [id], (error, results) => {
+    pool.query('SELECT distinct comu.numero as number,mess.description as message,comu.enviado \
+     FROM comun.comunica_g as comu left outer join comun.message_template as mess on comu.id_message = mess.id \
+      where inactivo=false and grupo =$1 ORDER BY 2 ASC', [id], (error, results) => {
       if (error) {
         throw error
       }
@@ -62,7 +79,6 @@ const getNumbers = (request, response) => {
     const _array = [];
     if(Array.isArray(request.body.votantes)){
       var myArray = request.body.votantes;
-
       
       // console.log("Longitud Array "+myArray.length);
       for(var i =0; i< myArray.length; i++){
@@ -101,7 +117,6 @@ const getNumbers = (request, response) => {
             if (error) {
               throw error
             }
-            
             response.status(201).send(`Depray added with ID: ${result.rows[0].id}`)
           })    
         }
@@ -138,11 +153,17 @@ const getNumbers = (request, response) => {
       from electoral.sufragar as suf \
       where suf.cedula_votante = prna.cedu_pena \
     ) \
-    order by prna.cedu_pena limit 100";
+    order by prna.cedu_pena";
       pool.query(query, (error, results) => {
         if (error) {
           throw error
         }
+        // if(results.rows.length >0){
+        //   console.log("Longitud de la Consulta="+results.rows);
+        //   // for(var i =0; i< myArray.length; i++){
+
+        //   // }
+        // }
         response.status(200).json(results.rows)
       })
     }
